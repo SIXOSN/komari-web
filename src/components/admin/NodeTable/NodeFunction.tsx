@@ -2,7 +2,7 @@ import * as React from "react";
 import { z } from "zod";
 import { schema } from "@/components/admin/NodeTable/schema/node";
 import { DataTableRefreshContext } from "@/components/admin/NodeTable/schema/DataTableRefreshContext";
-import { Terminal, Trash2, Copy, Download, DollarSign } from "lucide-react";
+import { Trash2, Copy, Download, DollarSign } from "lucide-react";
 import { t } from "i18next";
 import type { Row } from "@tanstack/react-table";
 import { EditDialog } from "./NodeEditDialog";
@@ -26,7 +26,6 @@ async function removeClient(uuid: string) {
 }
 
 type InstallOptions = {
-  disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   ghproxy: string;
@@ -42,7 +41,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [installOptions, setInstallOptions] = React.useState<InstallOptions>({
-    disableWebSsh: false,
     disableAutoUpdate: false,
     ignoreUnsafeCert: false,
     ghproxy: "",
@@ -55,9 +53,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     const token = row.original.token ?? "";
     const args: string[] = ["-e", host, "-t", token];
     // 根据安装选项生成参数
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
     if (installOptions.disableAutoUpdate) {
       args.push("--disable-auto-update");
     }
@@ -87,13 +82,13 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     switch (selectedPlatform) {
       case "linux":
         finalCommand =
-          `wget -qO- https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh | sudo bash -s -- ` +
+          `wget -qO- https://raw.githubusercontent.com/SIXOSN/komari-agent/refs/heads/main/install.sh | sudo bash -s -- ` +
           quoteShellArgs(args);
         break;
       case "windows":
         finalCommand =
           `powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ` +
-          `"iwr 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1'` +
+          `"iwr 'https://raw.githubusercontent.com/SIXOSN/komari-agent/refs/heads/main/install.ps1'` +
           ` -UseBasicParsing -OutFile 'install.ps1'; &` +
           ` '.\\install.ps1'`;
         args.forEach((arg) => {
@@ -103,7 +98,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
         break;
       case "macos":
         finalCommand =
-          `zsh <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) ` +
+          `zsh <(curl -sL https://raw.githubusercontent.com/SIXOSN/komari-agent/refs/heads/main/install.sh) ` +
           quoteShellArgs(args);
         break;
     }
@@ -152,28 +147,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 {t("admin.nodeTable.installOptions", "安装选项")}
               </label>
               <div className="grid grid-cols-2 gap-2">
-                <Flex gap="2">
-                  <Checkbox
-                    checked={installOptions.disableWebSsh}
-                    onCheckedChange={(checked) => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableWebSsh: Boolean(checked),
-                      }));
-                    }}
-                  />
-                  <label
-                    className="text-sm font-normal"
-                    onClick={() => {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        disableWebSsh: !prev.disableWebSsh,
-                      }));
-                    }}
-                  >
-                    {t("admin.nodeTable.disableWebSsh", "禁用 WebSSH")}
-                  </label>
-                </Flex>
                 <Flex gap="2">
                   <Checkbox
                     checked={installOptions.disableAutoUpdate}
@@ -292,15 +265,6 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
           </div>
         </Dialog.Content>
       </Dialog.Root>
-      <a href={`/terminal?uuid=${row.original.uuid}`} target="_blank">
-        <IconButton
-          variant="ghost"
-          title={t("terminal.title", "Terminal")}
-          aria-label={t("terminal.title", "Terminal")}
-        >
-          <Terminal className="p-1" />
-        </IconButton>
-      </a>
       {/** Edit Button */}
       <EditDialog item={row.original} />
       {/** Edit Money */}

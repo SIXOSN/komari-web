@@ -31,7 +31,6 @@ import {
   Plus,
   Radar,
   Settings,
-  Terminal,
   Trash2Icon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -176,7 +175,6 @@ const EmptyNodesGuide = () => {
 };
 
 type AutoDiscoveryInstallOptions = {
-  disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   memoryIncludeCache: boolean;
@@ -235,7 +233,6 @@ const AutoDiscoverySection = ({
   const [showOptions, setShowOptions] = React.useState(false);
   const [installOptions, setInstallOptions] =
     React.useState<AutoDiscoveryInstallOptions>({
-      disableWebSsh: false,
       disableAutoUpdate: false,
       ignoreUnsafeCert: false,
       memoryIncludeCache: false,
@@ -288,9 +285,6 @@ const AutoDiscoverySection = ({
       return `http://${settings.script_domain.replace(/\/+$/, "")}`;
     })();
     const args: string[] = ["-e", host, "--auto-discovery", adKey];
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
     if (installOptions.disableAutoUpdate) {
       args.push("--disable-auto-update");
     }
@@ -365,7 +359,7 @@ const AutoDiscoverySection = ({
     if (selectedPlatform === "windows") {
       scriptFile = "install.ps1";
     }
-    let scriptUrl = `https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/${scriptFile}`;
+    let scriptUrl = `https://raw.githubusercontent.com/SIXOSN/komari-agent/refs/heads/main/${scriptFile}`;
     if (enableGhproxy && ghproxy) {
       scriptUrl = scriptUrl.slice(8); // 去掉 https://
       if (ghproxy.endsWith("/")) {
@@ -424,7 +418,7 @@ const AutoDiscoverySection = ({
           `touch .komari-auto-discovery.json && ` +
           `docker run -d --name komari-agent --restart=always ` +
           `-v .komari-auto-discovery.json:/app/auto-discovery.json ` +
-          `ghcr.io/komari-monitor/komari-agent:latest ` +
+          `ghcr.io/sixosn/komari-agent:snapshot ` +
           quoteShellArgs(dockerArgs);
         break;
       }
@@ -524,28 +518,6 @@ const AutoDiscoverySection = ({
       {showOptions && (
         <Flex direction="column" gap="2">
           <div className="grid grid-cols-2 gap-2">
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={installOptions.disableWebSsh}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableWebSsh: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableWebSsh: !prev.disableWebSsh,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.disableWebSsh")}
-              </label>
-            </Flex>
             <Flex gap="2" align="center">
               <Checkbox
                 checked={installOptions.disableAutoUpdate}
@@ -1437,7 +1409,6 @@ const ActionButtons = ({
   settings: any;
   isSnapshotBackend: boolean;
 }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-4">
       <GenerateCommandButton
@@ -1445,15 +1416,6 @@ const ActionButtons = ({
         settings={settings}
         isSnapshotBackend={isSnapshotBackend}
       />
-      <IconButton
-        title={t("terminal.title")}
-        variant="ghost"
-        onClick={() => {
-          window.open(`/terminal?uuid=${node.uuid}`, "_blank");
-        }}
-      >
-        <Terminal size="18" />
-      </IconButton>
       <EditButton node={node} />
       <BillingButton node={node} />
       <DeleteButton node={node} />
@@ -1509,7 +1471,6 @@ function DeleteButton({ node }: { node: NodeDetail }) {
   );
 }
 type InstallOptions = {
-  disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   memoryIncludeCache: boolean;
@@ -1537,7 +1498,6 @@ function GenerateCommandButton({
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [installOptions, setInstallOptions] = React.useState<InstallOptions>({
-    disableWebSsh: false,
     disableAutoUpdate: false,
     ignoreUnsafeCert: false,
     memoryIncludeCache: false,
@@ -1591,9 +1551,6 @@ function GenerateCommandButton({
     const token = node.token || "";
     let args = ["-e", host, "-t", token];
     // 根据安装选项生成参数
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
     if (installOptions.disableAutoUpdate) {
       args.push("--disable-auto-update");
     }
@@ -1664,7 +1621,7 @@ function GenerateCommandButton({
       scriptFile = "install.ps1";
     }
     let scriptUrl =
-      `https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/${scriptFile}`;
+      `https://raw.githubusercontent.com/SIXOSN/komari-agent/refs/heads/main/${scriptFile}`;
     if (enableGhproxy) {
       if (enableGhproxy && ghproxy) {
         scriptUrl = scriptUrl.slice(8); // 去掉 https://
@@ -1718,7 +1675,7 @@ function GenerateCommandButton({
         }
         finalCommand =
           `docker run -d --name komari-agent --restart=always ` +
-          `ghcr.io/komari-monitor/komari-agent:latest ` +
+          `ghcr.io/sixosn/komari-agent:snapshot ` +
           quoteShellArgs(dockerArgs);
         break;
       }
@@ -1764,28 +1721,6 @@ function GenerateCommandButton({
               {t("admin.nodeTable.installOptions", "安装选项")}
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={installOptions.disableWebSsh}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableWebSsh: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableWebSsh: !prev.disableWebSsh,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.disableWebSsh")}
-                </label>
-              </Flex>
               <Flex gap="2" align="center">
                 <Checkbox
                   checked={installOptions.disableAutoUpdate}
@@ -2360,12 +2295,18 @@ function EditButton({ node }: { node: NodeDetail }) {
   const [saving, setSaving] = useState(false);
   const [traffic_limit, setTrafficLimit] = useState(0);
   const [traffic_limit_type, setTrafficLimitType] = useState("sum");
+  const [traffic_reset_day, setTrafficResetDay] = useState(0);
+  const [traffic_reset_time, setTrafficResetTime] = useState("00:00");
+  const [traffic_reset_timezone, setTrafficResetTimezone] = useState("UTC");
 
   React.useEffect(() => {
     setHidden(node.hidden);
     setTrafficLimit(node.traffic_limit || 0);
     setTrafficLimitType(node.traffic_limit_type || "sum");
-  }, [node.hidden, node.traffic_limit, node.traffic_limit_type]);
+    setTrafficResetDay(node.traffic_reset_day || 0);
+    setTrafficResetTime(node.traffic_reset_time || "00:00");
+    setTrafficResetTimezone(node.traffic_reset_timezone || "UTC");
+  }, [node.hidden, node.traffic_limit, node.traffic_limit_type, node.traffic_reset_day, node.traffic_reset_time, node.traffic_reset_timezone]);
 
   const save = async () => {
     try {
@@ -2381,6 +2322,9 @@ function EditButton({ node }: { node: NodeDetail }) {
           hidden,
           traffic_limit,
           traffic_limit_type,
+          traffic_reset_day,
+          traffic_reset_time,
+          traffic_reset_timezone,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -2528,6 +2472,33 @@ function EditButton({ node }: { node: NodeDetail }) {
                 e.currentTarget.value = formatBytes(traffic_limit);
               }}
             ></SettingCardShortTextInput>
+            <SettingCardShortTextInput
+              bordless
+              title={t("admin.nodeEdit.trafficResetDay")}
+              description={t("admin.nodeEdit.trafficResetDay_description")}
+              value={String(traffic_reset_day)}
+              showSaveButton={false}
+              onChange={(e) => {
+                const value = Number.parseInt(e.currentTarget.value, 10);
+                setTrafficResetDay(Number.isFinite(value) ? Math.min(31, Math.max(0, value)) : 0);
+              }}
+            />
+            <SettingCardShortTextInput
+              bordless
+              title={t("admin.nodeEdit.trafficResetTime")}
+              description={t("admin.nodeEdit.trafficResetTime_description")}
+              value={traffic_reset_time}
+              showSaveButton={false}
+              onChange={(e) => setTrafficResetTime(e.currentTarget.value)}
+            />
+            <SettingCardShortTextInput
+              bordless
+              title={t("admin.nodeEdit.trafficResetTimezone")}
+              description={t("admin.nodeEdit.trafficResetTimezone_description")}
+              value={traffic_reset_timezone}
+              showSaveButton={false}
+              onChange={(e) => setTrafficResetTimezone(e.currentTarget.value.trim())}
+            />
           </SettingCardCollapse>
         </div>
         <Flex gap="2" justify={"end"} className="mt-4">

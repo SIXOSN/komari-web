@@ -84,6 +84,12 @@
       "trafficLimitType_min": "取最小",
       "trafficLimitType_sum": "总和",
       "trafficLimitType_up": "仅上传",
+      "trafficResetDay": "每月流量重置日",
+      "trafficResetDay_description": "输入 1–31；输入 0 禁用周期重置。月份天数不足时按当月最后一天执行。",
+      "trafficResetTime": "流量重置时间",
+      "trafficResetTime_description": "24 小时制 HH:mm，例如 00:00。",
+      "trafficResetTimezone": "流量重置时区",
+      "trafficResetTimezone_description": "IANA 时区，例如 Asia/Shanghai、Asia/Singapore 或 UTC。",
       "waiting": "等待..."
     },
     "nodeTable": {

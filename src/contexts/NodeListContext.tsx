@@ -45,6 +45,9 @@ export type NodeBasicInfo = {
   traffic_limit: number;
   /** 流量阈值类型 */
   traffic_limit_type: undefined | "sum" | "max" | "min" | "up" | "down";
+  traffic_reset_day: number;
+  traffic_reset_time: string;
+  traffic_reset_timezone: string;
   /** 过期时间 */
   expired_at: string;
   /** 创建时间 */
@@ -133,6 +136,9 @@ export const NodeListProvider: React.FC<{ children: React.ReactNode }> = ({
           group: n.group ?? "",
           traffic_limit: n.traffic_limit ?? 0,
           traffic_limit_type: n.traffic_limit_type,
+          traffic_reset_day: n.traffic_reset_day ?? 0,
+          traffic_reset_time: n.traffic_reset_time ?? "00:00",
+          traffic_reset_timezone: n.traffic_reset_timezone ?? "UTC",
           expired_at: n.expired_at ?? "",
           created_at: n.created_at ?? "",
           updated_at: n.updated_at ?? "",
