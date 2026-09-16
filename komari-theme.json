@@ -1,10 +1,10 @@
 {
   "name": "Komari",
   "short": "default",
-  "description": "Komari default theme",
+  "description": "SIXOSN Komari administration frontend",
   "version": "1.0.0",
-  "author": "Akizon77",
-  "url": "https://github.com/komari-monitor/komari-web",
+  "author": "SIXOSN",
+  "url": "https://github.com/SIXOSN/komari-web",
   "preview": "dist/assets/edit_117847723_p0.webp",
   "configuration": {
     "type": "managed",
