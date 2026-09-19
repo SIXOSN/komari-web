@@ -246,7 +246,7 @@ const AutoDiscoverySection = ({
       includeMountpoints: "",
       interval: "",
       monthRotate: "",
-      installVersion: "",
+      installVersion: "snapshot",
     });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
@@ -259,7 +259,7 @@ const AutoDiscoverySection = ({
     React.useState(false);
   const [enableInterval, setEnableInterval] = React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
-  const [enableInstallVersion, setEnableInstallVersion] = React.useState(false);
+  const [enableInstallVersion, setEnableInstallVersion] = React.useState(true);
   const isSnapshotBackend = useIsSnapshotBackend();
 
   React.useEffect(() => {
@@ -318,8 +318,9 @@ const AutoDiscoverySection = ({
       args.push(`--install-service-name`);
       args.push(serviceName);
     }
-    const installVersion = installOptions.installVersion.trim();
-    if (enableInstallVersion && installVersion) {
+    const installVersion =
+      installOptions.installVersion.trim() || "snapshot";
+    if (enableInstallVersion) {
       args.push(`--install-version`);
       args.push(installVersion);
     }
@@ -1511,7 +1512,7 @@ function GenerateCommandButton({
     includeMountpoints: "",
     interval: "",
     monthRotate: "",
-    installVersion: "",
+    installVersion: "snapshot",
   });
 
   const [enableGhproxy, setEnableGhproxy] = React.useState(false);
@@ -1524,7 +1525,7 @@ function GenerateCommandButton({
     React.useState(false);
   const [enableInterval, setEnableInterval] = React.useState(false);
   const [enableMonthRotate, setEnableMonthRotate] = React.useState(false);
-  const [enableInstallVersion, setEnableInstallVersion] = React.useState(false);
+  const [enableInstallVersion, setEnableInstallVersion] = React.useState(true);
 
   React.useEffect(() => {
     if (!isSnapshotBackend) {
@@ -1586,8 +1587,9 @@ function GenerateCommandButton({
       args.push(`--install-service-name`);
       args.push(serviceName);
     }
-    const installVersion = installOptions.installVersion.trim();
-    if (enableInstallVersion && installVersion) {
+    const installVersion =
+      installOptions.installVersion.trim() || "snapshot";
+    if (enableInstallVersion) {
       args.push(`--install-version`);
       args.push(installVersion);
     }
